@@ -1,0 +1,34 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "STM32F407 + DAP-Link (cortex-debug)",
+      "type": "cortex-debug",
+      "request": "launch",
+      "servertype": "openocd",
+
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/build/Debug/002-KeyScanByDelay.elf",
+      "device": "STM32F407ZGTx",
+      "interface": "swd",
+      "runToEntryPoint": "main",
+
+      "serverpath": "/opt/homebrew/bin/openocd",
+      "searchDir": [
+        "/opt/homebrew/share/openocd/scripts"
+      ],
+
+      "configFiles": [
+        "interface/cmsis-dap.cfg",
+        "target/stm32f4x.cfg"
+      ],
+
+      "openOCDPreConfigLaunchCommands": [
+        "adapter speed 4000"
+      ],
+
+      "preLaunchTask": "Compile Debug",
+      "showDevDebugOutput": "raw"
+    }
+  ]
+}

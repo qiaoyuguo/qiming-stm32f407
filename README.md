@@ -49,7 +49,12 @@ Debugging is handled by `cortex-debug` (`001-FlowLight/.vscode/launch.json`), wh
 
 ### 001-FlowLight (流水灯)
 
-A simple **flowing light** example. Three on‑board LEDs (PE3, PE4, PG9) light up one after another in a repeating sequence.
+A simple **flowing light** example — three on‑board LEDs blink in sequence.
 
-See [001-FlowLight/README.md](001-FlowLight/README.md) for details on its functionality and implementation.
-flowing-light demo that blinks three on‑board LEDs in sequence — see [001-FlowLight/README.md](001-FlowLight/README.md)
+See [001-FlowLight/README.md](001-FlowLight/README.md) for details.
+
+### 002-KeyScanByDelay (按键扫描)
+
+A **key-scan** example — reads four on‑board push buttons with a delay‑based scan and software debouncing, driving the LEDs and buzzer.
+
+See [002-KeyScanByDelay/README.md](002-KeyScanByDelay/README.md) for details.
