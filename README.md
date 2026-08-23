@@ -58,3 +58,9 @@ See [001-FlowLight/README.md](001-FlowLight/README.md) for details.
 A **key-scan** example — reads four on‑board push buttons with a delay‑based scan and software debouncing, driving the LEDs and buzzer.
 
 See [002-KeyScanByDelay/README.md](002-KeyScanByDelay/README.md) for details.
+
+### 003-KeyByInterrupt (按键中断)
+
+An **interrupt-driven key** example — reads four on‑board push buttons with GPIO EXTI falling‑edge interrupts (non‑blocking) and drives the LEDs from the `HAL_GPIO_EXTI_Callback`.
+
+See [003-KeyByInterrupt/README.md](003-KeyByInterrupt/README.md) for details.
