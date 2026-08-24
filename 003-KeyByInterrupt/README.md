@@ -23,6 +23,7 @@ All four keys are configured as inputs with internal **pull-up** resistors, so p
 - System clock configured to **168 MHz** (HSE 25 MHz → PLL: M=25, N=336, P=2)
 - Reads four push buttons via **GPIO EXTI falling-edge interrupts** — no blocking scan in the main loop
 - NVIC interrupt `EXTI9_5_IRQn` enabled and prioritized for the key pins
+- **Non-blocking timestamp-based debounce** (20 ms) rejects contact bounce without blocking the ISR
 - Each key drives a different action:
   - **KEY0** → LED0 **on**
   - **KEY1** → LED0 **off**
@@ -64,10 +65,19 @@ The logic is split between `Core/Src/gpio.c` (configuration), `Core/Src/stm32f4x
    ```
    `HAL_GPIO_EXTI_IRQHandler()` checks the pending flag for the given pin, clears it, and calls the weak `HAL_GPIO_EXTI_Callback()`.
 
-4. **Callback (`main.c`)** — overrides the weak callback to run the LED actions:
+4. **Callback (`main.c`)** — overrides the weak callback to run the LED actions, with a **non-blocking timestamp-based debounce**:
    ```c
+   #define KEY_DEBOUNCE_MS 20
+   volatile uint32_t g_last_key_tick = 0;
+
    void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
    {
+     /* ignore triggers that arrive within the debounce window (contact bounce) */
+     uint32_t now = HAL_GetTick();
+     if ((now - g_last_key_tick) < KEY_DEBOUNCE_MS)
+       return;
+     g_last_key_tick = now;
+
      if (GPIO_Pin == KEY0_Pin)      HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
      else if (GPIO_Pin == KEY1_Pin) HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
      else if (GPIO_Pin == KEY2_Pin) HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
@@ -87,7 +97,7 @@ The logic is split between `Core/Src/gpio.c` (configuration), `Core/Src/stm32f4x
 
 - **Interrupt-driven vs. polling** — unlike the blocking `KeyScan` of `002-KeyScanByDelay`, this example uses **hardware EXTI interrupts**, so the main loop is never blocked while waiting for a key press.
 - **Falling-edge with pull-up** — the buttons connect the pin to ground when pressed; with the internal pull-up enabled this creates a clean falling edge, so `GPIO_MODE_IT_FALLING` is used.
-- **No software debouncing** — this version performs no explicit debounce. In real applications you would typically add one (e.g. a debounce timer, or re-check the level in the callback) to reject contact bounce. This is the natural next step over `002`.
+- **Software debouncing (non-blocking)** — a **timestamp-based** debounce rejects contact bounce: the callback records `HAL_GetTick()` on each trigger and ignores any trigger arriving within `KEY_DEBOUNCE_MS` (20 ms) of the last accepted one. It deliberately does **not** use `HAL_Delay` inside the callback — the EXTI ISR runs at priority 0 while SysTick runs at priority 15, so a blocking delay would deadlock the system (SysTick can never preempt the EXTI ISR to advance the tick).
 - **Shared `EXTI9_5` IRQ** — PF6–PF9 all map to the same NVIC line, so the handler must forward to every key pin via `HAL_GPIO_EXTI_IRQHandler`.
 - **NVIC enabled manually** — in this HAL the generated `gpio.c` enables `EXTI9_5_IRQn` explicitly because `HAL_GPIO_Init` does not enable the NVIC.
 - **Callback runs in interrupt context** — keep the work short (just GPIO writes here) and avoid blocking calls or `HAL_Delay` inside the callback.

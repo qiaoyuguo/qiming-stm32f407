@@ -43,7 +43,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+/* 记录上次有效按键触发的时间戳（tick），用于消抖 */
+volatile uint32_t g_last_key_tick = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -147,8 +148,20 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+#define KEY_DEBOUNCE_MS 20
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+  /* 方式三：基于时间戳的非阻塞消抖
+   * 中断里不做阻塞延时，只判断两次触发的时间间隔。
+   * 若间隔小于阈值（抖动）则忽略，避免干扰 EXTI 高优先级中断。 */
+  uint32_t now = HAL_GetTick();
+  if ((now - g_last_key_tick) < KEY_DEBOUNCE_MS)
+  {
+    return; /* 抖动，忽略本次触发 */
+  }
+  g_last_key_tick = now;
+
   if(GPIO_Pin == KEY0_Pin)
   {
     HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
