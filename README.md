@@ -64,3 +64,9 @@ See [002-KeyScanByDelay/README.md](002-KeyScanByDelay/README.md) for details.
 An **interrupt-driven key** example — reads four on‑board push buttons with GPIO EXTI falling‑edge interrupts (non‑blocking) and drives the LEDs from the `HAL_GPIO_EXTI_Callback`.
 
 See [003-KeyByInterrupt/README.md](003-KeyByInterrupt/README.md) for details.
+
+### 004-KeyStateMachine (按键状态机)
+
+A **key state machine** example — a TIM3 periodic interrupt (10 ms) drives a per‑key software state machine (RELEASED → DEBOUNCING → PRESSED) that debounces the four push buttons without blocking, then consumes the generated key events to toggle the LEDs.
+
+See [004-KeyStateMachine/README.md](004-KeyStateMachine/README.md) for details.
