@@ -1,1 +1,20 @@
-.*
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+Icon?
+
+# Thumbnails
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Editors / tools (.vscode is intentionally NOT ignored)
+.idea/
+*.swp
+*~
+
+# Build outputs
+build/
+
