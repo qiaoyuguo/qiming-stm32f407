@@ -30,49 +30,30 @@ STM32F407 embedded firmware workspace, built with the **STM32 HAL** library and 
 
 ## Build & Debug Configuration
 
-Build presets are defined in `CMakePresets.json`:
+Each project is a standalone CMake project with its own `CMakePresets.json`, `.vscode/` (tasks + launch) and `build/` directory. Build presets:
 
-- **Debug** — `-O0 -g3` (default, produces `build/Debug/001-FlowLight.elf`)
-- **Release** — `-Os -g0` (produces `build/Release/001-FlowLight.elf`)
+- **Debug** — `-O0 -g3` (default, produces `build/Debug/<project>.elf`)
+- **Release** — `-Os -g0` (produces `build/Release/<project>.elf`)
 
-VS Code tasks (in `001-FlowLight/.vscode/tasks.json`):
+VS Code tasks (per project, in `<project>/.vscode/tasks.json`):
 
 - **Compile Debug** (default build task): `cmake --preset Debug && cmake --build --preset Debug`
 - **Compile Release**: `cmake --preset Release && cmake --build --preset Release`
 - **Clean**: `rm -rf build`
 
-Debugging is handled by `cortex-debug` (`001-FlowLight/.vscode/launch.json`), which launches OpenOCD against the DAP‑Link probe over SWD, flashes the firmware and halts at `main`.
+Debugging is handled by `cortex-debug` (`<project>/.vscode/launch.json`), which launches OpenOCD against the DAP‑Link probe over SWD, flashes the firmware and halts at `main`.
 
 > **Note:** OpenOCD must run **outside** the VS Code terminal sandbox to access the USB probe (the sandbox blocks USB access → "unable to open CMSIS-DAP device"). VS Code F5 debug sessions are not sandboxed, so `cortex-debug` works normally.
 
 ## Projects
 
-### 001-FlowLight (流水灯)
+| # | Project | Topic | Mechanism |
+| --- | --- | --- | --- |
+| 001 | [FlowLight](001-FlowLight/README.md) | 流水灯 | Blocking `HAL_Delay` |
+| 002 | [KeyScanByDelay](002-KeyScanByDelay/README.md) | 按键扫描 | Delay-based polling scan + software debounce |
+| 003 | [KeyByInterrupt](003-KeyByInterrupt/README.md) | 按键中断 | GPIO EXTI falling-edge interrupts |
+| 004 | [KeyStateMachine](004-KeyStateMachine/README.md) | 按键状态机 | TIM3 10 ms periodic interrupt + per-key FSM |
+| 005 | [UartPolling](005-UartPolling/README.md) | 串口轮询收发 | Blocking `HAL_UARTEx_ReceiveToIdle` echo |
+| 006 | [UartInterrupt](006-UartInterrupt/README.md) | 串口中断收发 | `HAL_UARTEx_ReceiveToIdle_IT` + `RxEventCallback` |
 
-A simple **flowing light** example — three on‑board LEDs blink in sequence.
-
-See [001-FlowLight/README.md](001-FlowLight/README.md) for details.
-
-### 002-KeyScanByDelay (按键扫描)
-
-A **key-scan** example — reads four on‑board push buttons with a delay‑based scan and software debouncing, driving the LEDs and buzzer.
-
-See [002-KeyScanByDelay/README.md](002-KeyScanByDelay/README.md) for details.
-
-### 003-KeyByInterrupt (按键中断)
-
-An **interrupt-driven key** example — reads four on‑board push buttons with GPIO EXTI falling‑edge interrupts (non‑blocking) and drives the LEDs from the `HAL_GPIO_EXTI_Callback`.
-
-See [003-KeyByInterrupt/README.md](003-KeyByInterrupt/README.md) for details.
-
-### 004-KeyStateMachine (按键状态机)
-
-A **key state machine** example — a TIM3 periodic interrupt (10 ms) drives a per‑key software state machine (RELEASED → DEBOUNCING → PRESSED) that debounces the four push buttons without blocking, then consumes the generated key events to toggle the LEDs.
-
-See [004-KeyStateMachine/README.md](004-KeyStateMachine/README.md) for details.
-
-### 005-UartPolling (串口轮询收发)
-
-A **UART polling echo** example — UART5 (PC12/PD2, 115200‑8N1) in blocking polling mode: prints a banner, then echoes each received line back with a `> ` prompt.
-
-See [005-UartPolling/README.md](005-UartPolling/README.md) for details.
+The sequence forms a small curriculum: blinking → key input (polling → interrupt → state machine) → UART output/input (polling → interrupt). See each project's `README.md` for details.
