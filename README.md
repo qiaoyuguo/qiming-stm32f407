@@ -55,5 +55,6 @@ Debugging is handled by `cortex-debug` (`<project>/.vscode/launch.json`), which 
 | 004 | [KeyStateMachine](004-KeyStateMachine/README.md) | 按键状态机 | TIM3 10 ms periodic interrupt + per-key FSM |
 | 005 | [UartPolling](005-UartPolling/README.md) | 串口轮询收发 | Blocking `HAL_UARTEx_ReceiveToIdle` echo |
 | 006 | [UartInterrupt](006-UartInterrupt/README.md) | 串口中断收发 | `HAL_UARTEx_ReceiveToIdle_IT` + `RxEventCallback` |
+| 007 | [UartPrintf](007-UartPrintf/README.md) | 串口 printf | `__io_putchar()` retarget `printf()` → UART5 |
 
-The sequence forms a small curriculum: blinking → key input (polling → interrupt → state machine) → UART output/input (polling → interrupt). See each project's `README.md` for details.
+The sequence forms a small curriculum: blinking → key input (polling → interrupt → state machine) → UART output/input (polling → interrupt) → `printf` debug console. See each project's `README.md` for details.
