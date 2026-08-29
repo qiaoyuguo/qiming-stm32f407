@@ -56,5 +56,6 @@ Debugging is handled by `cortex-debug` (`<project>/.vscode/launch.json`), which 
 | 005 | [UartPolling](005-UartPolling/README.md) | 串口轮询收发 | Blocking `HAL_UARTEx_ReceiveToIdle` echo |
 | 006 | [UartInterrupt](006-UartInterrupt/README.md) | 串口中断收发 | `HAL_UARTEx_ReceiveToIdle_IT` + `RxEventCallback` |
 | 007 | [UartPrintf](007-UartPrintf/README.md) | 串口 printf | `__io_putchar()` retarget `printf()` → UART5 |
+| 008 | [I2CEeprom](008-I2CEeprom/README.md) | 硬件 I2C EEPROM | Hardware I2C1 (PB8/PB9) driving onboard AT24C02, with page-aware write splitting and CRC verification |
 
-The sequence forms a small curriculum: blinking → key input (polling → interrupt → state machine) → UART output/input (polling → interrupt) → `printf` debug console. See each project's `README.md` for details.
+The sequence forms a small curriculum: blinking → key input (polling → interrupt → state machine) → UART output/input (polling → interrupt) → `printf` debug console → I2C bus & EEPROM storage (hardware I2C + page-aware driver). See each project's `README.md` for details.
