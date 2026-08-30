@@ -58,5 +58,6 @@ Debugging is handled by `cortex-debug` (`<project>/.vscode/launch.json`), which 
 | 007 | [UartPrintf](007-UartPrintf/README.md) | 串口 printf | `__io_putchar()` retarget `printf()` → UART5 |
 | 008 | [I2CEeprom](008-I2CEeprom/README.md) | 硬件 I2C EEPROM | Hardware I2C1 (PB8/PB9) driving onboard AT24C02, with page-aware write splitting and CRC verification |
 | 009 | [SpiW25Q128](009-SpiW25Q128/README.md) | SPI Flash (W25Q128) | Hardware SPI1 (PB3/PB4/PB5 + software CS on PG8) driving W25Q128 16MB NOR Flash, full driver API with erase/program/read, cross-sector writes, ID/status/unique-ID tests |
+| 010 | [UartDma](010-UartDma/README.md) | 串口 DMA 收发 | `HAL_UARTEx_ReceiveToIdle_DMA` idle-frame RX (HT interrupt disabled, re-armed per frame) + non-blocking `HAL_UART_Transmit_DMA` with a `uart_dma_printf` console |
 
-The sequence forms a small curriculum: blinking → key input (polling → interrupt → state machine) → UART output/input (polling → interrupt) → `printf` debug console → I2C bus & EEPROM storage (hardware I2C + page-aware driver) → SPI bus & NOR Flash storage (hardware SPI + full W25Q128 driver). See each project's `README.md` for details.
+The sequence forms a small curriculum: blinking → key input (polling → interrupt → state machine) → UART output/input (polling → interrupt) → `printf` debug console → I2C bus & EEPROM storage (hardware I2C + page-aware driver) → SPI bus & NOR Flash storage (hardware SPI + full W25Q128 driver) → UART DMA (idle-frame DMA reception + non-blocking DMA transmit). See each project's `README.md` for details.
